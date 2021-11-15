@@ -1,0 +1,48 @@
+pipelines:
+  - name: release_build_info_go
+    configuration:
+      runtime:
+        type: image
+        image:
+          auto:
+            language: golang
+            versions:
+              - "1.17.2"
+      environmentVariables:
+        readOnly:
+          NEXT_VERSION: 0.0.0
+
+    steps:
+      - name: Release
+        type: Bash
+        configuration:
+          inputResources:
+            # what is this
+            - name: biReleaseGit
+          integrations:
+            - name: ecosystem_automation
+            - name: il_automation
+        execution:
+          onExecute:
+            - cd $res_biReleaseGit_resourcePath
+
+            # Set env
+            - export CI=true
+            - export JFROG_CLI_BUILD_NAME=ecosystem-build-info-go-release
+            - export JFROG_CLI_BUILD_NUMBER=$run_number
+            - export JFROG_CLI_BUILD_PROJECT=ecosys
+
+            # Make sure version provided
+            - echo "Checking variables"
+            - test -n "$NEXT_VERSION" -a "$NEXT_VERSION" != "0.0.0"
+
+            # Configure JFrog CLI
+            - curl -fL https://getcli.jfrog.io | bash -s v2 && chmod +x jfrog
+            - ./jfrog c add internal --url=$int_ecosystem_automation_url --access-token=$int_ecosystem_automation_token
+
+            # Build and upload
+              - sh "release/build.sh $NEXT_VERSION"
+
+            # Distribute release bundle
+            - ./jfrog ds rbc "build-info-go" $NEXT_VERSION --spec="release/specs/bi-rbc-spec.json" --spec-vars="VERSION=$NEXT_VERSION" --sign
+            - ./jfrog ds rbd "build-info-go" $NEXT_VERSION --site=ecosysjfrog

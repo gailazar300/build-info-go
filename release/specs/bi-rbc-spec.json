@@ -1,0 +1,12 @@
+{
+  "files": [
+    {
+      "pattern": "go-local/build-info-go/(${VERSION}/*)",
+      "target": "go-local/build-info-go-dist/{1}"
+    },
+    {
+      "pattern": "go-local/build-info-go/(latest/*)",
+      "target": "go-local/build-info-go-dist/{1}"
+    }
+  ]
+}
