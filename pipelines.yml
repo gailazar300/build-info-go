@@ -40,6 +40,8 @@ pipelines:
             - ./jfrog c add internal --url=$int_ecosystem_automation_url --access-token=$int_ecosystem_automation_token
 
             # Build and upload
+            - ls -a
+            - chmod +x release/build.sh
             - sh release/build.sh "$NEXT_VERSION"
 
             # Distribute release bundle
