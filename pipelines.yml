@@ -58,5 +58,5 @@ pipelines:
             #- sh release/build.sh "$NEXT_VERSION"
 
             # Distribute release bundle
-            - ./jfrog ds rbc "build-info-go" $NEXT_VERSION --spec="release/specs/bi-rbc-spec.json" --spec-vars="VERSION=$NEXT_VERSION" --sign --url=int_ecosysGaiDist_url --user=gail --password=Magnum1912
-            - ./jfrog ds rbd "build-info-go" $NEXT_VERSION --site=ecosysjfrog --url=int_ecosysGaiDist_url --user=gail --password=Magnum1912
+            - ./jfrog ds rbc "build-info-go" $NEXT_VERSION --spec="release/specs/bi-rbc-spec.json" --spec-vars="VERSION=$NEXT_VERSION" --sign --url=https://ecosysjfrog.jfrog.io/distribution/ --user=gail --password=Magnum1912
+            - ./jfrog ds rbd "build-info-go" $NEXT_VERSION --site=ecosysjfrog --url=https://ecosysjfrog.jfrog.io/distribution/ --user=gail --password=Magnum1912
