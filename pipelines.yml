@@ -55,7 +55,7 @@ pipelines:
             # Build and upload
             - ls -a
             - chmod +x release/build.sh
-            #- sh release/build.sh "$NEXT_VERSION"
+            - sh release/build.sh "$NEXT_VERSION"
 
             # Distribute release bundle
             - ./jfrog ds rbc "build-info-go" $NEXT_VERSION --spec="release/specs/bi-rbc-spec.json" --spec-vars="VERSION=$NEXT_VERSION" --sign --url=https://ecosysjfrog.jfrog.io/distribution/ --user=gail --password=Magnum1912
