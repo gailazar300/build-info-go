@@ -41,7 +41,7 @@ pipelines:
             - ./jfrog c add internal --url=$int_ecosystem_automation_url --access-token=$int_ecosystem_automation_token
 
             # Build and upload
-              - sh "release/build.sh $NEXT_VERSION"
+              - sh release/build.sh "$NEXT_VERSION"
 
             # Distribute release bundle
             - ./jfrog ds rbc "build-info-go" $NEXT_VERSION --spec="release/specs/bi-rbc-spec.json" --spec-vars="VERSION=$NEXT_VERSION" --sign
