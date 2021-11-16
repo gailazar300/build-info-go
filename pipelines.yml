@@ -1,3 +1,12 @@
+resources:
+  - name: buildinfoGoGit
+    type: GitRepo
+    configuration:
+      path: gailazar300/build-info-go
+      gitProvider: github
+      buildOn:
+        pullRequestCreate: true
+
 pipelines:
   - name: release_build_info_go
     configuration:
@@ -16,13 +25,13 @@ pipelines:
         type: Bash
         configuration:
           inputResources:
-            - name: build_info_go_gai
+            - name: buildinfoGoGit
           integrations:
             - name: ecosys_gai
             - name: gaiGithub
         execution:
           onExecute:
-            - cd $res_build_info_go_gai_resourcePath
+            - cd $res_buildinfoGoGit_resourcePath
 
             # Set env
             - export CI=true
