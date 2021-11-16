@@ -31,6 +31,7 @@ pipelines:
           integrations:
             - name: ecosys_gai
             - name: gaiGithub
+            - name: ecosysGaiDist
         execution:
           onExecute:
             - cd $res_buildinfoGoGit_resourcePath
