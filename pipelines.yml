@@ -50,12 +50,13 @@ pipelines:
             - curl -fL https://getcli.jfrog.io | bash -s v2 && chmod +x jfrog
             #- ./jfrog c add internal --url=$int_ecosystem_automation_url --access-token=$int_ecosystem_automation_token
             - ./jfrog c add internal --url=$int_ecosys_gai_url --access-token=$int_ecosys_gai_token
+            - ./jfrog c use internal
 
             # Build and upload
             - ls -a
             - chmod +x release/build.sh
-            - sh release/build.sh "$NEXT_VERSION"
+            #- sh release/build.sh "$NEXT_VERSION"
 
             # Distribute release bundle
-            - ./jfrog ds rbc "build-info-go" $NEXT_VERSION --spec="release/specs/bi-rbc-spec.json" --spec-vars="VERSION=$NEXT_VERSION" --sign
-            - ./jfrog ds rbd "build-info-go" $NEXT_VERSION --site=ecosysjfrog
+            - ./jfrog ds rbc "build-info-go" $NEXT_VERSION --spec="release/specs/bi-rbc-spec.json" --spec-vars="VERSION=$NEXT_VERSION" --sign --url=int_ecosysGaiDist_url --user=gail --password=Magnum1912
+            - ./jfrog ds rbd "build-info-go" $NEXT_VERSION --site=ecosysjfrog --url=int_ecosysGaiDist_url --user=gail --password=Magnum1912
