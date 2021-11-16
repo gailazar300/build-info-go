@@ -3,7 +3,7 @@ resources:
     type: GitRepo
     configuration:
       path: gailazar300/build-info-go
-      gitProvider: github
+      gitProvider: gaiGithub
       buildOn:
         pullRequestCreate: true
 
