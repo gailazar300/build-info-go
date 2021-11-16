@@ -15,15 +15,14 @@ pipelines:
       - name: Release
         type: Bash
         configuration:
-          #inputResources:
-            # what is this
-            #- name: gaiGithub
+          inputResources:
+            - name: build_info_go_gai
           integrations:
             - name: ecosys_gai
             - name: gaiGithub
         execution:
           onExecute:
-            #- cd $res_biReleaseGit_resourcePath
+            - cd $res_build_info_go_gai_resourcePath
 
             # Set env
             - export CI=true
