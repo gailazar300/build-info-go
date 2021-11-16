@@ -33,11 +33,12 @@ pipelines:
 
             # Make sure version provided
             - echo "Checking variables"
-            - test -n "$NEXT_VERSION" -a "$NEXT_VERSION" != "0.0.0"
+            #- test -n "$NEXT_VERSION" -a "$NEXT_VERSION" != "0.0.0"
 
             # Configure JFrog CLI
             - curl -fL https://getcli.jfrog.io | bash -s v2 && chmod +x jfrog
-            - ./jfrog c add internal --url=$int_ecosystem_automation_url --access-token=$int_ecosystem_automation_token
+            #- ./jfrog c add internal --url=$int_ecosystem_automation_url --access-token=$int_ecosystem_automation_token
+            - ./jfrog c add internal --url=$int_ecosys_gai_url --access-token=$int_ecosys_gai_token
 
             # Build and upload
             - ls -a
