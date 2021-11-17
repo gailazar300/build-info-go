@@ -28,7 +28,7 @@ pipelines:
         configuration:
           inputResources:
             - name: buildinfoGoGit
-            - trigger : false
+              trigger : false
           integrations:
             - name: il_automation
             - name: entplus_deployer
