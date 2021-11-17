@@ -60,7 +60,7 @@ verifyVersionMatching () {
 }
 
 version="$1"
-pkgPath="ecosys-build-info-cli/v1"
+pkgPath="ecosys-bi-cli/v1"
 
 # Verify version provided in pipelines UI matches version in build-info-go source code.
 verifyVersionMatching
