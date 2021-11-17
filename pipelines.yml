@@ -51,8 +51,8 @@ pipelines:
 
             # Build and upload
             - chmod +x release/build.sh
-            - sh release/build.sh "$NEXT_VERSION"
+            #- sh release/build.sh "$NEXT_VERSION"
 
             # Distribute release bundle
-            - ./jfrog ds rbc "build-info-go" $NEXT_VERSION --spec="release/specs/bi-rbc-spec.json" --spec-vars="VERSION=$NEXT_VERSION" --sign
+            - ./jfrog ds rbc "build-info-go" $NEXT_VERSION --spec="release/specs/bi-rbc-spec.json" --spec-vars="VERSION=$NEXT_VERSION" --sign --url=$int_entplus_deployer_url/distribution/ --user=$int_entplus_deployer_user --access-token=int_entplus_deployer_apikey
             #- ./jfrog ds rbd "build-info-go" $NEXT_VERSION --site=releases.jrog.io
