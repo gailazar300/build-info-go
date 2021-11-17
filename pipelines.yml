@@ -6,8 +6,8 @@ resources:
       branches:
         include: repo21-release
       gitProvider: gai_github
-      buildOn:
-        commit: false
+      #buildOn:
+       # commit: false
 
 pipelines:
   - name: release_build_info_go
