@@ -37,7 +37,7 @@ pipelines:
             - cd $res_buildinfoGoGit_resourcePath
 
             # Set env
-            - set -x
+            #- set -x
             - export CI=true
             - export JFROG_CLI_BUILD_NAME=ecosystem-build-info-go-release
             - export JFROG_CLI_BUILD_NUMBER=$run_number
