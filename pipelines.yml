@@ -2,12 +2,10 @@ resources:
   - name: buildinfoGoGit
     type: GitRepo
     configuration:
-      path: gailazar300/build-info-go
+      path: jfrog/build-info-go
       branches:
-        include: repo21-release
-      gitProvider: gai_github
-      #buildOn:
-       # commit: false
+        include: main
+      gitProvider: il_automation
 
 pipelines:
   - name: release_build_info_go
@@ -37,7 +35,6 @@ pipelines:
             - cd $res_buildinfoGoGit_resourcePath
 
             # Set env
-            #- set -x
             - export CI=true
             - export JFROG_CLI_BUILD_NAME=ecosystem-build-info-go-release
             - export JFROG_CLI_BUILD_NUMBER=$run_number
@@ -47,14 +44,14 @@ pipelines:
             - echo "Checking variables"
             - test -n "$NEXT_VERSION" -a "$NEXT_VERSION" != "0.0.0"
 
-            # Configure JFrog CLI
+            # Download JFrog CLI
             - curl -fL https://getcli.jfrog.io | bash -s v2 && chmod +x jfrog
             - ./jfrog c add internal --url=$int_entplus_deployer_url --user=$int_entplus_deployer_user --access-token=$int_entplus_deployer_apikey
 
             # Build and upload
             - chmod +x release/build.sh
-            #- sh release/build.sh "$NEXT_VERSION"
+            - sh release/build.sh "$NEXT_VERSION"
 
             # Distribute release bundle
-            #- ./jfrog ds rbc "build-info-go" $NEXT_VERSION --spec="release/specs/bi-rbc-spec.json" --spec-vars="VERSION=$NEXT_VERSION" --sign --url=$int_entplus_deployer_url/distribution --user=$int_entplus_deployer_user --access-token=$int_entplus_deployer_apikey
+            - ./jfrog ds rbc "build-info-go" $NEXT_VERSION --spec="release/specs/bi-rbc-spec.json" --spec-vars="VERSION=$NEXT_VERSION" --sign --url=$int_entplus_deployer_url/distribution --user=$int_entplus_deployer_user --access-token=$int_entplus_deployer_apikey
             - ./jfrog ds rbd "build-info-go" $NEXT_VERSION --site=releases.jfrog.io --url=$int_entplus_deployer_url/distribution --user=$int_entplus_deployer_user --access-token=$int_entplus_deployer_apikey
