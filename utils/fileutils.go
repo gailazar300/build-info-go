@@ -3,6 +3,7 @@ package utils
 import (
 	"errors"
 	"fmt"
+	buildinfo "github.com/jfrog/build-info-go/entities"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -149,6 +150,23 @@ func MoveFile(sourcePath, destPath string) (err error) {
 	return err
 }
 
+func calcChecksumDetails(filePath string) (buildinfo.Checksum, error) {
+	file, err := os.Open(filePath)
+	defer file.Close()
+	if err != nil {
+		return buildinfo.Checksum{}, err
+	}
+	return CalcChecksumDetailsFromReader(file)
+}
+
+func CalcChecksumDetailsFromReader(reader io.Reader) (buildinfo.Checksum, error) {
+	checksumInfo, err := CalcChecksums(reader)
+	if err != nil {
+		return buildinfo.Checksum{}, err
+	}
+	return buildinfo.Checksum{Md5: checksumInfo[MD5], Sha1: checksumInfo[SHA1], Sha256: checksumInfo[SHA256]}, nil
+}
+
 // Return the list of files and directories in the specified path
 func ListFiles(path string, includeDirs bool) ([]string, error) {
 	sep := GetFileSeparator()
@@ -178,6 +196,11 @@ func ListFiles(path string, includeDirs bool) ([]string, error) {
 		}
 	}
 	return fileList, nil
+}
+
+type FileDetails struct {
+	Checksum buildinfo.Checksum
+	Size     int64
 }
 
 func DownloadFile(downloadTo string, fromUrl string) (err error) {
@@ -446,4 +469,48 @@ func IsPathSymlink(path string) bool {
 
 func IsFileSymlink(file os.FileInfo) bool {
 	return file.Mode()&os.ModeSymlink != 0
+}
+
+// Return all files in the specified path who satisfy the filter func. Not recursive.
+func ListFilesByFilterFunc(path string, filterFunc func(filePath string) (bool, error)) ([]string, error) {
+	sep := GetFileSeparator()
+	if !strings.HasSuffix(path, sep) {
+		path += sep
+	}
+	var fileList []string
+	files, _ := ioutil.ReadDir(path)
+	path = strings.TrimPrefix(path, "."+sep)
+
+	for _, f := range files {
+		filePath := path + f.Name()
+		satisfy, err := filterFunc(filePath)
+		if err != nil {
+			return nil, err
+		}
+		if !satisfy {
+			continue
+		}
+		exists, err := IsFileExists(filePath, false)
+		if err != nil {
+			return nil, err
+		}
+		if exists {
+			fileList = append(fileList, filePath)
+			continue
+		}
+
+		// Checks if the filepath is a symlink.
+		if IsPathSymlink(filePath) {
+			// Gets the file info of the symlink.
+			file, err := GetFileInfo(filePath, false)
+			if err != nil {
+				return nil, err
+			}
+			// Checks if the symlink is a file.
+			if !file.IsDir() {
+				fileList = append(fileList, filePath)
+			}
+		}
+	}
+	return fileList, nil
 }

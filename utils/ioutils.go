@@ -2,7 +2,10 @@ package utils
 
 import (
 	"errors"
+	"github.com/jfrog/build-info-go/entities"
 	"io"
+	"os"
+	"strings"
 	"sync"
 )
 
@@ -54,4 +57,37 @@ func writeData(p []byte, w io.Writer, wg *sync.WaitGroup, errChan chan error) {
 		errChan <- ErrShortWrite
 	}
 	wg.Done()
+}
+
+func UnixToWinPathSeparator(filePath string) string {
+	return strings.Replace(filePath, "/", "\\\\", -1)
+}
+
+func WinToUnixPathSeparator(filePath string) string {
+	return strings.Replace(filePath, "\\", "/", -1)
+}
+
+func GetFileDetails(filePath string, includeChecksums bool) (*FileDetails, error) {
+	var err error
+	details := new(FileDetails)
+	if includeChecksums {
+		details.Checksum, err = calcChecksumDetails(filePath)
+		if err != nil {
+			return details, err
+		}
+	} else {
+		details.Checksum = entities.Checksum{}
+	}
+
+	file, err := os.Open(filePath)
+	defer file.Close()
+	if err != nil {
+		return nil, err
+	}
+	fileInfo, err := file.Stat()
+	if err != nil {
+		return nil, err
+	}
+	details.Size = fileInfo.Size()
+	return details, nil
 }
