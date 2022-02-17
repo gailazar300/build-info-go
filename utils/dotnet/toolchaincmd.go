@@ -2,7 +2,6 @@ package dotnet
 
 import (
 	"github.com/jfrog/build-info-go/utils"
-	"github.com/jfrog/jfrog-client-go/utils/errorutils"
 	"io"
 	"os/exec"
 )
@@ -70,11 +69,11 @@ func newNonWindowsNugetCmd() (*Cmd, error) {
 	// Mono's first argument is nuget.exe's path, so we will look for both mono and nuget.exe in PATH.
 	monoPath, err := exec.LookPath("mono")
 	if err != nil {
-		return nil, errorutils.CheckError(err)
+		return nil, err
 	}
 	nugetExePath, err := exec.LookPath("nuget.exe")
 	if err != nil {
-		return nil, errorutils.CheckError(err)
+		return nil, err
 	}
 	return &Cmd{toolchain: Nuget, execPath: monoPath, Command: []string{nugetExePath}}, nil
 }
@@ -82,7 +81,7 @@ func newNonWindowsNugetCmd() (*Cmd, error) {
 func CreateDotnetAddSourceCmd(cmdType ToolchainType, sourceUrl string) (*Cmd, error) {
 	addSourceCmd, err := NewToolchainCmd(cmdType)
 	if err != nil {
-		return nil, errorutils.CheckError(err)
+		return nil, err
 	}
 	addSourceCmd.Command = append(addSourceCmd.Command, cmdType.GetAddSourceArgs()...)
 	switch cmdType {

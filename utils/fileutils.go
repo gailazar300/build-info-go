@@ -3,7 +3,8 @@ package utils
 import (
 	"errors"
 	"fmt"
-	buildinfo "github.com/jfrog/build-info-go/entities"
+
+	"github.com/jfrog/build-info-go/entities"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -150,21 +151,21 @@ func MoveFile(sourcePath, destPath string) (err error) {
 	return err
 }
 
-func calcChecksumDetails(filePath string) (buildinfo.Checksum, error) {
+func calcChecksumDetails(filePath string) (entities.Checksum, error) {
 	file, err := os.Open(filePath)
 	defer file.Close()
 	if err != nil {
-		return buildinfo.Checksum{}, err
+		return entities.Checksum{}, err
 	}
 	return CalcChecksumDetailsFromReader(file)
 }
 
-func CalcChecksumDetailsFromReader(reader io.Reader) (buildinfo.Checksum, error) {
+func CalcChecksumDetailsFromReader(reader io.Reader) (entities.Checksum, error) {
 	checksumInfo, err := CalcChecksums(reader)
 	if err != nil {
-		return buildinfo.Checksum{}, err
+		return entities.Checksum{}, err
 	}
-	return buildinfo.Checksum{Md5: checksumInfo[MD5], Sha1: checksumInfo[SHA1], Sha256: checksumInfo[SHA256]}, nil
+	return entities.Checksum{Md5: checksumInfo[MD5], Sha1: checksumInfo[SHA1], Sha256: checksumInfo[SHA256]}, nil
 }
 
 // Return the list of files and directories in the specified path
@@ -196,11 +197,6 @@ func ListFiles(path string, includeDirs bool) ([]string, error) {
 		}
 	}
 	return fileList, nil
-}
-
-type FileDetails struct {
-	Checksum buildinfo.Checksum
-	Size     int64
 }
 
 func DownloadFile(downloadTo string, fromUrl string) (err error) {
@@ -469,6 +465,36 @@ func IsPathSymlink(path string) bool {
 
 func IsFileSymlink(file os.FileInfo) bool {
 	return file.Mode()&os.ModeSymlink != 0
+}
+
+type FileDetails struct {
+	Checksum entities.Checksum
+	Size     int64
+}
+
+func GetFileDetails(filePath string, includeChecksums bool) (*FileDetails, error) {
+	var err error
+	details := new(FileDetails)
+	if includeChecksums {
+		details.Checksum, err = calcChecksumDetails(filePath)
+		if err != nil {
+			return details, err
+		}
+	} else {
+		details.Checksum = entities.Checksum{}
+	}
+
+	file, err := os.Open(filePath)
+	defer file.Close()
+	if err != nil {
+		return nil, err
+	}
+	fileInfo, err := file.Stat()
+	if err != nil {
+		return nil, err
+	}
+	details.Size = fileInfo.Size()
+	return details, nil
 }
 
 // Return all files in the specified path who satisfy the filter func. Not recursive.
