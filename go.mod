@@ -1,6 +1,6 @@
 module github.com/jfrog/build-info-go
 
-go 1.18
+go 1.19
 
 require (
 	github.com/BurntSushi/toml v1.1.0
@@ -26,3 +26,5 @@ require (
 	github.com/xrash/smetrics v0.0.0-20201216005158-039620a65673 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
+
+replace github.com/jfrog/gofrog => github.com/gailazar300/gofrog v1.1.2-0.20221020124730-6c4eca700351
