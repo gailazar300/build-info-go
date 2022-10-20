@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/jfrog/build-info-go/utils"
 	"io/ioutil"
+	"os"
 	"path/filepath"
 	"strings"
 
@@ -127,7 +128,7 @@ func createAlternativeVersionForms(originalVersion string) []string {
 }
 
 func (extractor *packagesExtractor) loadPackagesConfig(dependenciesSource string) (*packagesConfig, error) {
-	content, err := ioutil.ReadFile(dependenciesSource)
+	content, err := os.ReadFile(dependenciesSource)
 	if err != nil {
 		return nil, err
 	}
