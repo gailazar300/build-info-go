@@ -4,7 +4,6 @@ import (
 	"encoding/xml"
 	"fmt"
 	"github.com/jfrog/build-info-go/utils"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -215,7 +214,7 @@ func createNugetPackage(packagesPath string, nuget xmlPackage, nPackage *nugetPa
 
 	// Nuspec file that holds the metadata for the package.
 	nuspecPath := filepath.Join(packagesPath, nPackage.id, nPackage.version, strings.Join([]string{nPackage.id, "nuspec"}, "."))
-	nuspecContent, err := ioutil.ReadFile(nuspecPath)
+	nuspecContent, err := os.ReadFile(nuspecPath)
 	if err != nil {
 		return nil, err
 	}
